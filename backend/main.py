@@ -13,6 +13,7 @@ cors = CORS(app, resource={
 })
 
 api = Api(app, version='1.0')
+api.add_resource(LangDetect, '/api/language-detection')
 api.add_resource(HelloWorld, '/hello')
 
 
