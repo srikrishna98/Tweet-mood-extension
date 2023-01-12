@@ -10,12 +10,25 @@ const emojis = {
   NEGATIVE: "&#128577",
 };
 
+const hostedURL = "https://www.srikrishna.me/";
+const langDetectURL = "api/language-detection";
+const sentimentURL = "api/sentiment-score";
+
 // Function to store hashed tweets
 const hash = (s) =>
   s.split("").reduce((a, b) => {
     a = (a << 5) - a + b.charCodeAt(0);
     return a & a;
   }, 0);
+
+// *****************************
+//
+// DOM Manipulation
+//
+// *****************************
+
+// TODO - Appends the detected mood next to the time element of the tweet.
+const appendSentiment = (inputEl, sentiment) => {};
 
 // *****************************
 //
@@ -52,16 +65,55 @@ const removeTweetFromFeed = (tweet) => {
 // *****************************
 
 function analyseTweet(inputEl) {
-  // Make API Call to check if english language
-  // If English language:
-  //    getSentiment()
-  //    addTweetToFeed()
-  // Else:
-  //    doNothing
+  // Regex to replace newline spaces with spaces.
+  tweetText = inputEl.innerText.replace(/\s+/g, " ").trim();
+
+  // URL pointing to the python backend hosted in AWS EC2 instance with domain name www.srikrishna.me
+  const baseUrl = hostedURL + langDetectURL;
+
+  const urlParams = [
+    {
+      tweet_text: tweetText,
+    },
+  ];
+
+  fetch(baseUrl, {
+    method: "POST",
+    body: JSON.stringify(urlParams),
+    headers: new Headers({ "Content-Type": "application/json" }),
+  })
+    .then((response) => response.json())
+    .then((json) => {
+      // The sentiment has to be found only for tweets in the english language.
+      if (json[0]["is_english"] === true) {
+        getSentiment(inputEl);
+      }
+    });
 }
 
 const getSentiment = (inputEl) => {
-  // Make API Call to identify mood of the tweet
+  // Regex to replace newline spaces with spaces.
+  tweetText = inputEl.innerText.replace(/\s+/g, " ").trim();
+
+  // URL pointing to the python backend hosted in AWS EC2 instance with domain name www.srikrishna.me
+  const baseUrl = hostedURL + sentimentURL;
+
+  const urlParams = [
+    {
+      tweet_text: tweetText,
+    },
+  ];
+
+  fetch(baseUrl, {
+    method: "POST",
+    body: JSON.stringify(urlParams),
+    headers: new Headers({ "Content-Type": "application/json" }),
+  })
+    .then((resp) => resp.json())
+    .then((json) => {
+      // This tweet along with the analyzed sentiment has to be stored in-memory.
+      addTweetToFeed(inputEl, json[0]["detected_mood"]);
+    });
 };
 
 // *******************************************************
