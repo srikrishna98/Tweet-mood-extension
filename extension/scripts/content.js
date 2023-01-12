@@ -72,7 +72,40 @@ const getSentiment = (inputEl) => {
 //
 /// ******************************************************
 
-function handleMutations(mutations_list, selector) {}
+function handleMutations(mutations_list, selector) {
+  mutations_list.forEach((mutation) => {
+    const addedNodes = mutation.addedNodes;
+
+    //  New nodes are being added in the mutation
+    addedNodes.forEach((added_node) => {
+      if (added_node.querySelector) {
+        const inputEl = added_node.querySelector(selector);
+        if (!!inputEl) {
+          // Check to see if the tweet has any text - handles the case where tweet
+          //  has only images/gifs/videos and no text to analyse.
+          if ((inputEl.innerText.trim()?.length || 0) > 0 === true) {
+            // Analyse the tweet only if it has not been already analysed.
+            if (tweetTexts.has(hash(inputEl.innerText)) !== true) {
+              analyseTweet(inputEl);
+            }
+          }
+        }
+      }
+    });
+
+    // Existing nodes are being removed in the mutation
+    const removedNodes = mutation.removedNodes;
+    removedNodes.forEach((removed_node) => {
+      if (removed_node.querySelector) {
+        const inputEl = removed_node.querySelector(selector);
+        if (!!inputEl) {
+          // Remove the tweet from in-memory storage when it is removed from the DOM.
+          removeTweetFromFeed(inputEl.innerText.replace(/\s+/g, " ").trim());
+        }
+      }
+    });
+  });
+}
 
 // ****************************************
 //
