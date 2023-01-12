@@ -27,8 +27,16 @@ const hash = (s) =>
 //
 // *****************************
 
-// TODO - Appends the detected mood next to the time element of the tweet.
-const appendSentiment = (inputEl, sentiment) => {};
+// Appends the detected mood next to the time element of the tweet.
+const appendSentiment = (inputEl, sentiment) => {
+  tweetNode = inputEl.parentNode.parentNode.parentNode.querySelector("time");
+  if (tweetNode !== null) {
+    tweetNode.insertAdjacentHTML(
+      "afterend",
+      `<span>·</span><span>Detected Mood: ${emojis[sentiment]}</span>`
+    );
+  }
+};
 
 // *****************************
 //
