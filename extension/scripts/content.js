@@ -144,10 +144,7 @@ function handleMutations(mutations_list, selector) {
           // Check to see if the tweet has any text - handles the case where tweet
           //  has only images/gifs/videos and no text to analyse.
           if ((inputEl.innerText.trim()?.length || 0) > 0 === true) {
-            // Analyse the tweet only if it has not been already analysed.
-            if (tweetTexts.has(hash(inputEl.innerText)) !== true) {
-              analyseTweet(inputEl);
-            }
+            analyseTweet(inputEl);
           }
         }
       }
